@@ -42,7 +42,7 @@ step). The AI widget is embedded before `</body>` with the seller flow as the
 default (PalletClearance's primary intake is sellers with overstock/clearance):
 
 ```html
-<script src="https://staging.euro-intermed.com/widget.js" defer></script>
+<script src="https://dash.staging.euro-intermed.com/widget.js" defer></script>
 <script>
   window.AngrosistChat.init({ containerId: "ai-widget-container",
     vertical: "palletclearance", intent: "sell", lang: "en",
