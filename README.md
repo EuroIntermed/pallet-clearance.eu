@@ -44,9 +44,8 @@ default (PalletClearance's primary intake is sellers with overstock/clearance):
 ```html
 <script src="https://dash.staging.euro-intermed.com/widget.js" defer></script>
 <script>
-  window.AngrosistChat.init({ containerId: "ai-widget-container",
-    vertical: "palletclearance", intent: "sell", lang: "en",
-    privacyUrl: "/privacy.html" });
+  window.AngrosistChat.init({ vertical: "palletclearance", intent: "sell",
+    lang: "en", privacyUrl: "/privacy.html" });
 </script>
 ```
 

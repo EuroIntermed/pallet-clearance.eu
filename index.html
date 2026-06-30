@@ -441,8 +441,8 @@
       // the frontend deploy and rebuild widget.js; all embeds follow.
       window.addEventListener("DOMContentLoaded", function () {
         if (!window.AngrosistChat) return;
+        // No containerId → floating launcher button (bottom-right).
         window.AngrosistChat.init({
-          containerId: "ai-widget-container",
           vertical: "palletclearance",
           intent: "sell",
           lang: "en",
