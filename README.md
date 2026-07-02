@@ -37,23 +37,32 @@ This website is a qualified B2B clearance desk. It intentionally avoids public s
 
 ## Deploy & Widget
 
-Static site — deploy this folder directly as its own Vercel project (no build
-step). The AI widget is embedded before `</body>` with the seller flow as the
-default (PalletClearance's primary intake is sellers with overstock/clearance):
+Deploy this folder as its own Vercel project. `build.mjs` runs as the build
+command and templates the widget embed into `dist/` (which Vercel serves). The AI
+widget is embedded before `</body>` (seller flow as the default — PalletClearance's
+primary intake is sellers with overstock/clearance), inside
+`<!-- WIDGET:START -->` / `<!-- WIDGET:END -->` markers with a `__WIDGET_BASE_URL__`
+placeholder:
 
 ```html
-<script src="https://dash.staging.euro-intermed.com/widget.js" defer></script>
+<script src="__WIDGET_BASE_URL__/widget.js" defer></script>
 <script>
   window.AngrosistChat.init({ vertical: "palletclearance", intent: "sell",
     lang: "en", privacyUrl: "/privacy.html" });
 </script>
 ```
 
+**The widget origin and visibility are NOT hardcoded — set these per Vercel project:**
+
+| Env var | Default | Purpose |
+|---|---|---|
+| `WIDGET_BASE_URL` | `https://dash.euro-intermed.com` | Origin serving `widget.js`. Set `https://dash.staging.euro-intermed.com` on the staging project. |
+| `WIDGET_ENABLED` | `true` | `false` removes the widget entirely from the page. |
+
 `widget.js` is served by the deployed frontend project. The backend API URL is
 **baked into `widget.js` at build time** from the frontend's `VITE_API_URL` — the
 site does not pass `apiUrl`. To repoint the backend, change `VITE_API_URL` in the
-frontend deploy and rebuild `widget.js`; all embeds follow. No URL is hardcoded
-in the sites.
+frontend deploy and rebuild `widget.js`; all embeds follow.
 
 ## Production Blockers
 
