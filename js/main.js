@@ -253,7 +253,7 @@
     const label = config ? config.whatsappLabel[currentLanguage] : whatsappDefault.label[currentLanguage];
     const text = config ? config.whatsappText[currentLanguage] : whatsappDefault.text[currentLanguage];
     const helper = config ? config.whatsappHelper[currentLanguage] : whatsappDefault.helper[currentLanguage];
-    const href = `https://wa.me/40765934455?text=${encodeURIComponent(text)}`;
+    const href = `https://wa.me/40745799995?text=${encodeURIComponent(text)}`;
     whatsappLinks.forEach((link) => {
       link.href = href;
       if (link.hasAttribute("data-pc-whatsapp-link")) {
