@@ -102,9 +102,26 @@ All external URLs / IDs / flags are read from the environment at build time in
 | `PUBLIC_URL_ANGROSIST` | Angrosist deep-link | `https://angrosist.ro` |
 | `PUBLIC_URL_SKALYOU` | SkalYou deep-link | `https://skalyou.com` |
 | `PUBLIC_URL_READYMEAL` | Ready-Meal deep-link | `https://ready-meal.com` |
+| `GOOGLE_SITE_VERIFICATION` | Search Console token; empty → no verification meta tag | *(unset)* |
+| `PUBLIC_SOCIAL_LINKEDIN` / `PUBLIC_SOCIAL_FACEBOOK` / `PUBLIC_SOCIAL_INSTAGRAM` | official profile URLs added to Organization `sameAs`; empties skipped | *(unset)* |
 
 GA4 uses **Consent Mode v2** — analytics storage stays `denied` until the visitor
 accepts in the cookie banner (choice persisted in `localStorage['ei-analytics-consent']`).
+
+### SEO / structured data
+
+`src/lib/schema.ts` builds the JSON-LD nodes; `BaseLayout` emits **WebSite**
+(+ publisher **Organization**) on every page, **FAQPage** on the home page (from
+`c.faq.items`), and a **BreadcrumbList** on each non-home page
+(`/cum-functioneaza`, `/contact`, legal). `robots.txt` is generated
+(`src/pages/robots.txt.ts`) so its `Sitemap:` line is an absolute URL from
+`SITE_URL`; the sitemap (`@astrojs/sitemap`, i18n-configured) emits `xhtml:link`
+hreflang alternates.
+
+**Owner: Search Console.** Add the property in
+[Google Search Console](https://search.google.com/search-console), pick the
+**HTML tag** method, copy the token into `GOOGLE_SITE_VERIFICATION` on the Vercel
+project, redeploy, then verify and **submit `/sitemap-index.xml`** under Sitemaps.
 
 ## Accessibility & motion
 

@@ -14,10 +14,9 @@ export type Locale = 'ro' | 'en'
 
 const ro = {
   meta: {
-    homeTitle:
-      'PalletClearance.eu | Vinde stoc overstock · Cumpără loturi de clearance B2B',
+    homeTitle: 'PalletClearance.eu | Vinde overstock, cumpără loturi clearance',
     homeDescription:
-      'PalletClearance conectează companiile cu stoc de valorificat (overstock, retururi, end-of-line, near-expiry, lichidare) cu cumpărători B2B calificați. Flux confidențial, fără listări publice.',
+      'PalletClearance conectează companiile cu stoc de valorificat — overstock, retururi, near-expiry, lichidare — cu cumpărători B2B calificați. Flux confidențial.',
     howTitle: 'Cum funcționează | Vânzare & cumpărare loturi — PalletClearance.eu',
     howDescription:
       'Fluxul de vânzător și de cumpărător pentru loturi de clearance, pas cu pas. Fără listări publice, fără prețuri vizibile — totul confidențial și calificat B2B.',
@@ -393,7 +392,7 @@ const en: typeof ro = {
     homeTitle:
       'PalletClearance.eu | Sell overstock · Source clearance lots B2B',
     homeDescription:
-      'PalletClearance connects companies with stock to move (overstock, returns, end-of-line, near-expiry, liquidation) to qualified B2B buyers. A confidential flow, no public listings.',
+      'PalletClearance connects companies with stock to move — overstock, returns, near-expiry, liquidation — to qualified B2B buyers. A confidential flow.',
     howTitle: 'How it works | Selling & buying lots — PalletClearance.eu',
     howDescription:
       'The seller and buyer flow for clearance lots, step by step. No public listings, no visible prices — everything confidential and B2B-qualified.',
