@@ -1,0 +1,42 @@
+---
+/**
+ * Widget — the Euro-Intermed AI chat widget embed, configured for PalletClearance.
+ * Origin + visibility come from env (WIDGET_BASE_URL / WIDGET_ENABLED); nothing
+ * is hardcoded. When WIDGET_ENABLED=false the component renders nothing.
+ *
+ * The backend API URL is baked into widget.js at build time (frontend's
+ * VITE_API_URL) — we deliberately do NOT pass apiUrl here so that single source
+ * of truth is preserved. Vertical "palletclearance" + intent "sell" put the agent
+ * straight into the seller flow (the buyer path is reachable in-conversation).
+ *
+ * The widget exposes `window.AngrosistChat.open({ message, vertical, intent })`
+ * which the home two-path CTAs feature-detect to launch the chat prefilled.
+ */
+import type { Locale } from '../i18n/ui'
+import { widgetEnabled, widgetBaseUrl } from '../lib/config'
+import { localizePath } from '../i18n/utils'
+const { locale } = Astro.props as { locale: Locale }
+const privacyUrl = localizePath('/confidentialitate', locale)
+---
+
+{
+  widgetEnabled && (
+    <>
+      <script is:inline src={`${widgetBaseUrl}/widget.js`} defer />
+      <script is:inline define:vars={{ lang: locale, privacyUrl }}>
+        {`
+        window.addEventListener('DOMContentLoaded', function () {
+          if (!window.AngrosistChat) return;
+          // No containerId → floating launcher button (bottom-right).
+          window.AngrosistChat.init({
+            vertical: 'palletclearance',
+            intent: 'sell',
+            lang: lang,
+            privacyUrl: privacyUrl
+          });
+        });
+      `}
+      </script>
+    </>
+  )
+}

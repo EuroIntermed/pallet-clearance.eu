@@ -1,76 +1,112 @@
-# PalletClearance.eu V1
+# www.pallet-clearance
 
-Standalone English-first EN/RO website for PalletClearance.eu.
+Marketing site for **PalletClearance.eu** — the **clearance & overstock** vertical
+of the Euro Intermed ecosystem. It is a **buy/sell desk for surplus stock**
+(overstock, returns, end-of-line, near-expiry, liquidation) with **two flows** —
+a **SELLER** flow and a **BUYER** flow — and **no public catalog**: offers stay
+confidential (client requirement). Built on the **shared Euro-Intermed design
+system**, themed **amber/terracotta** via a single `data-vertical="palletclearance"`
+attribute.
 
-## Structure
+## Stack
 
-- `index.html` - static landing page, language toggle, route summary, AI widget mount.
-- `css/styles.css` - scoped `pc-` visual system.
-- `js/main.js` - language switcher, route selection, WhatsApp updates, FAQ, mobile CTA.
-- `js/legal.js` - privacy/terms helpers.
-- `vercel.json` - static deploy config (this folder is its own Vercel project).
-- `robots.txt` - crawl defaults.
+- **[Astro](https://astro.build)** (static output) + **TypeScript**
+- **@astrojs/mdx** — legal pages authored in MDX
+- **@astrojs/sitemap** — `sitemap-index.xml`
+- **@fontsource-variable/dm-sans** — self-hosted variable font (no Google Fonts CDN, GDPR)
+- Deployed on **Vercel** (static; `main` = prod, `staging` = staging)
 
-The AI chat widget (`#ai-widget-container`) is the single intake channel. The old
-PHP `form-handler.php` email form has been removed (Vercel does not run PHP);
-WhatsApp / email / Calendly links remain as passive fallbacks.
+## Commands
 
-## Contact Defaults
-
-V1 uses the shared Euro Intermed contact details:
-
-- Email: `eurointermeds@gmail.com`
-- Phone / WhatsApp: `+40745799995`
-- WhatsApp URL: `https://wa.me/40745799995`
-- Calendly: `https://calendly.com/eurointermeds`
-
-## Route Mapping
-
-- `sell-overstock` -> `seller-flow`, target `palletclearance-seller`
-- `buy-clearance` -> `buyer-flow`, target `palletclearance-buyer`
-- `romania-market-entry` -> `market-entry-flow`, target `euro-intermed-market-entry`
-- `other-b2b` -> `other-b2b-flow`, target `euro-intermed-triage`
-
-## Guardrails
-
-This website is a qualified B2B clearance desk. It intentionally avoids public stock browsing, public commercial terms, buyer/seller accounts, payments, automatic matching, file transfer, and AI backend behavior.
-
-## Deploy & Widget
-
-Deploy this folder as its own Vercel project. `build.mjs` runs as the build
-command and templates the widget embed into `dist/` (which Vercel serves). The AI
-widget is embedded before `</body>` (seller flow as the default — PalletClearance's
-primary intake is sellers with overstock/clearance), inside
-`<!-- WIDGET:START -->` / `<!-- WIDGET:END -->` markers with a `__WIDGET_BASE_URL__`
-placeholder:
-
-```html
-<script src="__WIDGET_BASE_URL__/widget.js" defer></script>
-<script>
-  window.AngrosistChat.init({ vertical: "palletclearance", intent: "sell",
-    lang: "en", privacyUrl: "/privacy.html" });
-</script>
+```bash
+npm install       # install deps (commit package-lock.json — Vercel uses it)
+npm run dev       # local dev server
+npm run build     # astro build → ./dist
+npm run preview   # preview the production build
+npm run check     # astro check (type + template diagnostics)
 ```
 
-**The widget origin and visibility are NOT hardcoded — set these per Vercel project:**
+## Project structure
 
-| Env var | Default | Purpose |
+```
+src/
+  components/     # BaseLayout, Nav, Hero, HeroPanel, Section, Card, Button, FAQ,
+                  # Footer, CookieBanner, LangToggle, ThemeToggle, Analytics,
+                  # Widget, Home, HowItWorks, ContactPage
+  layouts/        # LegalLayout (for the MDX legal pages)
+  i18n/           # ui.ts (RO/EN dictionary), utils.ts (locale routing helpers)
+  lib/            # config.ts — the ONLY place env is read (Hard Rule #1)
+  scripts/        # site.ts (scroll-reveal + GA event delegation)
+  styles/         # global.css — shared design tokens (light/dark) + animations
+  pages/          # ro at root, en mirrored under /en/
+public/           # favicon.svg, robots.txt (copied verbatim into dist/)
+astro.config.mjs  # site URL from env, i18n (ro default, en under /en/), sitemap, mdx
+vercel.json       # framework/build/output + security headers + legacy redirects
+```
+
+## i18n
+
+RO is the default locale (root paths); EN is mirrored under `/en/`. Copy lives in a
+single typed dictionary (`src/i18n/ui.ts`); every page ships both locales with
+`hreflang` alternates. `LangToggle` links to the equivalent page in the other locale.
+
+## Theme — shared design system, amber accent
+
+The **neutral / type / spacing / shadow / animation** layer in `src/styles/global.css`
+is the exact system shared with the Euro-Intermed hub and Angrosist. PalletClearance
+selects the **amber/terracotta** accent by setting **one attribute** on `<html>`
+(in `BaseLayout.astro`):
+
+```html
+<html data-vertical="palletclearance">
+```
+
+That flips every `--ei-accent*` / `--ei-gold*` token to the amber (`#c46a2a`, dark
+`#e08a4a`) + clay (`#b5532f`) pairing — WCAG-AA verified in light **and** dark (the
+shared tokens already pass). No token surgery, no bespoke component CSS, no leaked
+green/teal hexes (the brand-mark gradient uses `--ei-accent-strong`/`--ei-gold-strong`).
+
+## Two flows, no public catalog
+
+PalletClearance presents **two value propositions**, each routed to the WhatsApp / AI
+flow — it does **not** expose a products/offers catalog:
+
+- **Seller flow** — list/sell surplus stock. Stock **photos are mandatory** and are
+  handled inside the widget/agent flow, not on the marketing page.
+- **Buyer flow** — register a buyer profile / source clearance lots. Opportunities are
+  shared only with qualified buyers.
+
+Offers stay **confidential** — no public listings, no visible prices, no browsing.
+
+## Contact: WhatsApp-only (no forms)
+
+There is **no HTML contact form and no form-POST endpoint** anywhere on the site
+(design-system standard for all ecosystem sites). The two intake channels are the
+**AI chat widget** and **WhatsApp** — `/contact` shows an intent chooser that
+pre-fills a `wa.me` message per B2B route, with email + phone as secondary options.
+
+## Configuration (env only — no hardcoded URLs/IDs)
+
+All external URLs / IDs / flags are read from the environment at build time in
+`src/lib/config.ts` (and `astro.config.mjs` for the site URL):
+
+| Var | Purpose | Default |
 |---|---|---|
-| `WIDGET_BASE_URL` | `https://dash.euro-intermed.com` | Origin serving `widget.js`. Set `https://staging-dash.euro-intermed.com` on the staging project. |
-| `WIDGET_ENABLED` | `true` | `false` removes the widget entirely from the page. |
-| `GA_MEASUREMENT_ID` | *(empty)* | GA4 Measurement ID, e.g. `G-XXXXXXX`; set per Vercel project. Leave empty to disable analytics (no GA snippet, no cookie banner). Injected into the `<!-- GA:START -->` / `<!-- GA:END -->` block at build time — never hardcoded. |
+| `WIDGET_ENABLED` | `"false"` strips the chat widget | `true` |
+| `WIDGET_BASE_URL` | origin serving `widget.js` | `https://dash.euro-intermed.com` |
+| `GA_MEASUREMENT_ID` | GA4 id; empty → no GA snippet + no cookie banner | *(unset)* |
+| `SITE_URL` / `PUBLIC_SITE_URL` | canonical origin | `https://palletclearance.eu` |
+| `PUBLIC_WHATSAPP_NUMBER` | wa.me number (digits) | `40745799995` |
+| `PUBLIC_CONTACT_EMAIL` / `PUBLIC_CONTACT_PHONE` / `PUBLIC_CALENDLY_URL` | contact details | *(company defaults)* |
+| `PUBLIC_URL_EURO_INTERMED` | hub deep-link | `https://euro-intermed.ro` |
+| `PUBLIC_URL_ANGROSIST` | Angrosist deep-link | `https://angrosist.ro` |
+| `PUBLIC_URL_SKALYOU` | SkalYou deep-link | `https://skalyou.com` |
+| `PUBLIC_URL_READYMEAL` | Ready-Meal deep-link | `https://ready-meal.com` |
 
-Analytics uses Google Consent Mode v2 (analytics storage denied by default) with a
-lightweight cookie banner that grants consent on Accept and persists it in
-`localStorage`. A best-effort `chat_opened` GA event fires when the chat widget
-launcher is opened (KPI §A.2).
+GA4 uses **Consent Mode v2** — analytics storage stays `denied` until the visitor
+accepts in the cookie banner (choice persisted in `localStorage['ei-analytics-consent']`).
 
-`widget.js` is served by the deployed frontend project. The backend API URL is
-**baked into `widget.js` at build time** from the frontend's `VITE_API_URL` — the
-site does not pass `apiUrl`. To repoint the backend, change `VITE_API_URL` in the
-frontend deploy and rebuild `widget.js`; all embeds follow.
+## Accessibility & motion
 
-## Production Blockers
-
-- Final dedicated PalletClearance email/phone if different from Euro Intermed.
-- Final privacy and terms URLs.
+WCAG AA: labels, visible focus, keyboard nav, AA+ contrast in light and dark. All
+animation is CSS-first and wrapped in a `prefers-reduced-motion: reduce` off-switch.

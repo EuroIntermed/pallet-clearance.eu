@@ -1,0 +1,230 @@
+---
+/**
+ * HowItWorks — the "Cum funcționează" page. Two parallel flows (SELLER and BUYER),
+ * each a set of numbered steps, plus a "photos mandatory for sellers" note and a
+ * final WhatsApp CTA. All copy from the i18n dictionary.
+ */
+import type { Locale } from '../i18n/ui'
+import { t, localizePath } from '../i18n/utils'
+import { waLink } from '../lib/config'
+import BaseLayout from './BaseLayout.astro'
+import Section from './Section.astro'
+import Button from './Button.astro'
+
+const { locale } = Astro.props as { locale: Locale }
+const c = t(locale)
+const h = c.how
+const contactHref = localizePath('/contact', locale)
+
+const flows = [
+  { data: h.seller, wa: c.hero.sellWaText, cta: h.seller.title },
+  { data: h.buyer, wa: c.hero.buyWaText, cta: h.buyer.title },
+]
+---
+
+<BaseLayout locale={locale} title={c.meta.howTitle} description={c.meta.howDescription}>
+  <section class="ei-how-hero">
+    <div class="ei-container" data-reveal>
+      <p class="ei-eyebrow">{h.eyebrow}</p>
+      <h1>{h.title}</h1>
+      <p class="ei-lead">{h.lead}</p>
+    </div>
+  </section>
+
+  <Section tone="raised" labelledby="how-flows-title">
+    <h2 id="how-flows-title" class="ei-sr-only">{h.eyebrow}</h2>
+    <div class="pc-flows">
+      {
+        flows.map((flow, fi) => (
+          <div class="pc-flow" data-reveal style={`--i:${fi}`}>
+            <div class="pc-flow__head">
+              <p class="ei-eyebrow">{flow.data.eyebrow}</p>
+              <h3>{flow.data.title}</h3>
+            </div>
+            <ol class="pc-flow__steps">
+              {flow.data.steps.map((step, i) => (
+                <li class="pc-flow__step">
+                  <span class="pc-flow__n" aria-hidden="true">{i + 1}</span>
+                  <div>
+                    <h4>{step.title}</h4>
+                    <p>{step.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <Button href={waLink(flow.wa)} variant="whatsapp" target="_blank" rel="noopener" data-ga-vertical="whatsapp">
+              {flow.cta}
+            </Button>
+          </div>
+        ))
+      }
+    </div>
+  </Section>
+
+  <Section labelledby="how-note-title">
+    <div class="pc-note" data-reveal>
+      <span class="pc-note__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="5" width="18" height="14" rx="2" />
+          <circle cx="12" cy="12" r="3" />
+          <path d="M8 5l1.5-2h5L16 5" />
+        </svg>
+      </span>
+      <div>
+        <p class="ei-eyebrow">{h.note.eyebrow}</p>
+        <h2 id="how-note-title">{h.note.title}</h2>
+        <p class="ei-lead">{h.note.body}</p>
+      </div>
+    </div>
+  </Section>
+
+  <Section tone="contrast" labelledby="how-cta-title">
+    <div class="ei-cta" data-reveal>
+      <h2 id="how-cta-title">{h.cta.title}</h2>
+      <p class="ei-lead">{h.cta.copy}</p>
+      <div class="ei-cta__actions">
+        <Button href={waLink(c.hero.whatsappText)} variant="whatsapp" target="_blank" rel="noopener" data-ga-vertical="whatsapp">
+          {h.cta.primary}
+        </Button>
+        <Button href={contactHref} variant="secondary">{h.cta.secondary}</Button>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>
+
+<style>
+  .ei-how-hero {
+    padding-block: clamp(2.5rem, 2rem + 4vw, 5rem) clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  }
+  .ei-how-hero h1 {
+    margin-top: 0.7rem;
+  }
+  .ei-how-hero .ei-lead {
+    margin-top: 1rem;
+  }
+
+  .pc-flows {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  .pc-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: clamp(1.6rem, 1.2rem + 1.4vw, 2.2rem);
+    background: var(--ei-surface);
+    border: 1px solid var(--ei-hairline);
+    border-radius: var(--ei-radius-lg);
+    box-shadow: var(--ei-shadow-sm);
+  }
+  .pc-flow__head h3 {
+    margin-top: 0.4rem;
+    font-size: 1.4rem;
+  }
+  .pc-flow__steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1 0 auto;
+  }
+  .pc-flow__step {
+    display: flex;
+    gap: 0.9rem;
+  }
+  .pc-flow__n {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--ei-accent-soft);
+    color: var(--ei-accent-text);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .pc-flow__step h4 {
+    margin: 0 0 0.3rem;
+    font-size: 1.02rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .pc-flow__step p {
+    margin: 0;
+    color: var(--ei-muted);
+    font-size: 0.92rem;
+  }
+
+  /* Photos-mandatory note */
+  .pc-note {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    max-width: 62ch;
+    margin-inline: auto;
+    padding: clamp(1.5rem, 1.2rem + 1.4vw, 2.2rem);
+    background: var(--ei-accent-soft);
+    border: 1px solid var(--ei-accent);
+    border-radius: var(--ei-radius-lg);
+  }
+  .pc-note__icon {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--ei-radius-md);
+    background: var(--ei-surface);
+    color: var(--ei-accent-strong);
+    box-shadow: var(--ei-shadow-sm);
+  }
+  .pc-note h2 {
+    margin-top: 0.4rem;
+    font-size: 1.35rem;
+  }
+  .pc-note .ei-lead {
+    margin-top: 0.6rem;
+    font-size: 1rem;
+  }
+
+  .ei-cta {
+    max-width: 60ch;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .ei-cta .ei-lead {
+    margin: 1rem auto 0;
+  }
+  .ei-cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+  .ei-cta__actions :global(.ei-btn--secondary) {
+    --_fg: var(--ei-on-contrast);
+    --_bd: rgba(255, 255, 255, 0.35);
+  }
+  .ei-cta__actions :global(.ei-btn--secondary:hover) {
+    --_bg: rgba(255, 255, 255, 0.1);
+    --_bd: var(--ei-on-contrast);
+    --_fg: var(--ei-on-contrast);
+  }
+
+  @media (max-width: 780px) {
+    .pc-flows {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 480px) {
+    .pc-note {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+</style>

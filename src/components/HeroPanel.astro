@@ -1,0 +1,142 @@
+---
+/**
+ * HeroPanel — the PalletClearance hero visual: a "confidential flow · example"
+ * card showing how a seller lot and a buyer profile are privately reviewed and
+ * routed — never listed publicly. Pure CSS/markup, theme-aware, reduced-motion
+ * safe. Amber accent inherited from the shared token layer.
+ */
+import { t } from '../i18n/utils'
+import type { Locale } from '../i18n/ui'
+
+const { locale } = Astro.props as { locale: Locale }
+const p = t(locale).hero.panel
+const rows = [p.seller, p.buyer, p.route]
+---
+
+<figure class="pc-panel" aria-hidden="true">
+  <div class="pc-panel__glow"></div>
+  <div class="pc-panel__card">
+    <div class="pc-panel__head">
+      <span>{p.kicker}</span>
+      <strong>
+        <span class="pc-panel__dot"></span>
+        {p.status}
+      </strong>
+    </div>
+    <dl class="pc-panel__list">
+      {
+        rows.map((r) => (
+          <div class="pc-panel__row">
+            <dt>{r.label}</dt>
+            <dd>{r.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+    <div class="pc-panel__note">
+      <span aria-hidden="true">●</span>
+      <p>{p.note}</p>
+    </div>
+  </div>
+</figure>
+
+<style>
+  .pc-panel {
+    position: relative;
+    margin: 0;
+    width: 100%;
+    max-width: 460px;
+  }
+  .pc-panel__glow {
+    position: absolute;
+    inset: -18% -12% -22% -12%;
+    background: radial-gradient(60% 60% at 60% 30%, var(--ei-accent-soft), transparent 70%),
+      radial-gradient(50% 50% at 20% 90%, var(--ei-gold-soft), transparent 70%);
+    filter: blur(4px);
+    pointer-events: none;
+  }
+  .pc-panel__card {
+    position: relative;
+    padding: clamp(1.4rem, 1.1rem + 1vw, 2rem);
+    background: var(--ei-surface);
+    border: 1px solid var(--ei-hairline-strong);
+    border-radius: var(--ei-radius-lg);
+    box-shadow: var(--ei-shadow-lg);
+  }
+  .pc-panel__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-bottom: 1rem;
+    margin-bottom: 0.4rem;
+    border-bottom: 1px solid var(--ei-hairline);
+  }
+  .pc-panel__head span {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ei-faint);
+  }
+  .pc-panel__head strong {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45em;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--ei-accent-text);
+  }
+  .pc-panel__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ei-accent);
+    box-shadow: 0 0 0 4px var(--ei-accent-soft);
+    animation: ei-badge-dot 2.4s ease-in-out infinite;
+  }
+  .pc-panel__list {
+    margin: 0;
+  }
+  .pc-panel__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--ei-hairline);
+  }
+  .pc-panel__row:last-child {
+    border-bottom: 0;
+  }
+  .pc-panel__row dt {
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--ei-faint);
+  }
+  .pc-panel__row dd {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--ei-accent-strong);
+  }
+  .pc-panel__note {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.2rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--ei-hairline);
+  }
+  .pc-panel__note span {
+    color: var(--ei-accent);
+    font-size: 0.7rem;
+  }
+  .pc-panel__note p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--ei-muted);
+  }
+</style>
