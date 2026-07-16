@@ -1,10 +1,12 @@
 ---
 /**
  * Home — full homepage body for a single locale (rendered by /index.astro and
- * /en/index.astro). PalletClearance spine:
- *   hero → TWO-PATH split (Sell / Buy, each with its own WhatsApp CTA) →
- *   what-we-handle → no-public-listings (confidentiality) → 4-step how-it-works →
- *   trust strip → ecosystem cross-links (hub + siblings) → FAQ → WhatsApp CTA.
+ * /en/index.astro). PalletClearance spine (varied rhythm, no repeated card rows):
+ *   hero (pallet/routes motif + abstract bg + concrete wash) →
+ *   TWO-PATH split (Sell / Buy, each its own WhatsApp CTA — the signature) →
+ *   what-we-handle bento (stock categories + stock types) →
+ *   CONFIDENTIALITY (no public listings) → 4-step how-it-works (iconified) →
+ *   dark STAT/PROOF band → ecosystem cross-links → FAQ → gradient WhatsApp CTA.
  * There is NO public catalog/offers listing — offers stay confidential.
  * All copy comes from the i18n dictionary; ecosystem URLs come from env.
  */
@@ -17,6 +19,7 @@ import Section from './Section.astro'
 import Card from './Card.astro'
 import Button from './Button.astro'
 import FAQ from './FAQ.astro'
+import Icon from './Icon.astro'
 
 const { locale } = Astro.props as { locale: Locale }
 const c = t(locale)
@@ -31,20 +34,22 @@ const pillarLinks: Record<string, { url: string; ga: string }> = {
 }
 
 const paths = [
-  {
-    kind: 'seller',
-    data: c.paths.seller,
-    wa: c.hero.sellWaText,
-  },
-  {
-    kind: 'buyer',
-    data: c.paths.buyer,
-    wa: c.hero.buyWaText,
-  },
+  { kind: 'seller', icon: 'pallet', data: c.paths.seller, wa: c.hero.sellWaText },
+  { kind: 'buyer', icon: 'target', data: c.paths.buyer, wa: c.hero.buyWaText },
 ]
+
+// Icon anchors per section (decorative — copy still lives in ui.ts).
+const catIcons = ['wheat', 'box', 'globe']
+const typeIcons = ['layers', 'tag', 'rotate', 'clock', 'flag', 'stack']
+const confIcons = ['lock', 'filter', 'send', 'shield']
+const stepIcons = ['split', 'chat', 'eye', 'send']
+const proofIcons = ['lock', 'shield', 'building']
 ---
 
 <BaseLayout locale={locale} title={c.meta.homeTitle} description={c.meta.homeDescription} faqItems={c.faq.items}>
+  <!-- Page-level film grain (fixed, click-through, soft-light). -->
+  <div class="ei-grain" aria-hidden="true"></div>
+
   <Hero locale={locale} />
 
   <!-- TWO-PATH split — the signature PalletClearance section -->
@@ -58,15 +63,16 @@ const paths = [
       {
         paths.map((p, i) => (
           <article class={`pc-path pc-path--${p.kind}`} data-reveal style={`--i:${i}`}>
-            <span class="pc-path__tag">{p.data.tag}</span>
+            <div class="pc-path__top">
+              <span class="pc-path__ic"><Icon name={p.icon} size={22} /></span>
+              <span class="pc-path__tag">{p.data.tag}</span>
+            </div>
             <h3 class="pc-path__title">{p.data.title}</h3>
             <p class="pc-path__body">{p.data.body}</p>
             <ul class="pc-path__points">
               {p.data.points.map((pt) => (
                 <li>
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <path d="M20 6 9 17l-5-5" />
-                  </svg>
+                  <Icon name="check" size={18} />
                   <span>{pt}</span>
                 </li>
               ))}
@@ -84,21 +90,40 @@ const paths = [
     </div>
   </Section>
 
-  <!-- What we handle (no catalog — types of stock only) -->
+  <!-- What we handle — bento (categories + stock types). No catalog. -->
   <Section id="what-we-handle" labelledby="handle-title">
     <div class="ei-head" data-reveal>
       <p class="ei-eyebrow">{c.handle.eyebrow}</p>
       <h2 id="handle-title">{c.handle.title}</h2>
       <p class="ei-lead">{c.handle.copy}</p>
     </div>
-    <div class="ei-grid ei-grid--3">
+    <div class="pc-bento">
       {
         c.handle.items.map((item, i) => (
-          <Card badge={item.tag} title={item.name} index={i}>
+          <article class={`pc-tile pc-tile--cat pc-tile--c${i} ${i === 0 ? 'pc-tile--feature' : ''}`} data-reveal style={`--i:${i}`}>
+            <span class="pc-tile__ic"><Icon name={catIcons[i]} size={22} /></span>
+            <span class="pc-tile__tag">{item.tag}</span>
+            <h3>{item.name}</h3>
             <p>{item.body}</p>
-          </Card>
+          </article>
         ))
       }
+      <article class="pc-tile pc-tile--types" data-reveal style="--i:3">
+        <h3>{c.handle.types.title}</h3>
+        <ul class="pc-types">
+          {
+            c.handle.types.items.map((ty, i) => (
+              <li>
+                <span class="pc-types__ic"><Icon name={typeIcons[i]} size={18} /></span>
+                <span class="pc-types__txt">
+                  <b>{ty.name}</b>
+                  <small>{ty.hint}</small>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </article>
     </div>
   </Section>
 
@@ -110,13 +135,11 @@ const paths = [
         <h2 id="conf-title">{c.confidential.title}</h2>
         <p class="ei-lead">{c.confidential.copy}</p>
       </div>
-      <ul class="pc-conf__grid" data-reveal>
+      <ul class="pc-conf__cards">
         {
-          c.confidential.benefits.map((b) => (
-            <li>
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M20 6 9 17l-5-5" />
-              </svg>
+          c.confidential.benefits.map((b, i) => (
+            <li class="pc-conf__card" data-reveal style={`--i:${i}`}>
+              <span class="pc-conf__ic"><Icon name={confIcons[i]} size={20} /></span>
               <span>{b}</span>
             </li>
           ))
@@ -125,7 +148,7 @@ const paths = [
     </div>
   </Section>
 
-  <!-- How it works (4 steps) -->
+  <!-- How it works (4 steps, iconified) -->
   <Section id="how-we-work" labelledby="proc-title">
     <div class="ei-head ei-head--center" data-reveal>
       <p class="ei-eyebrow">{c.process.eyebrow}</p>
@@ -135,7 +158,10 @@ const paths = [
       {
         c.process.steps.map((step, i) => (
           <li class="ei-step" data-reveal style={`--i:${i}`}>
-            <span class="ei-step__n" aria-hidden="true">{i + 1}</span>
+            <div class="ei-step__head">
+              <span class="ei-step__ic"><Icon name={stepIcons[i]} size={22} /></span>
+              <span class="ei-step__n" aria-hidden="true">{i + 1}</span>
+            </div>
             <h3>{step.title}</h3>
             <p>{step.body}</p>
           </li>
@@ -147,25 +173,46 @@ const paths = [
     </div>
   </Section>
 
-  <!-- Trust strip -->
-  <Section tone="raised" labelledby="trust-title">
-    <div class="ei-head ei-head--center" data-reveal>
-      <p class="ei-eyebrow">{c.trust.eyebrow}</p>
-      <h2 id="trust-title">{c.trust.title}</h2>
+  <!-- Dark STAT / PROOF band -->
+  <section class="pc-proof" aria-labelledby="proof-title">
+    <svg class="ei-contour ei-contour--onDark pc-proof__contour" viewBox="0 0 1200 460" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+      <path d="M-40 80 C 220 26 420 140 660 84 S 1040 30 1250 100" />
+      <path d="M-40 168 C 200 112 440 232 660 172 S 1060 114 1250 184" />
+      <path d="M-40 256 C 220 198 420 316 660 256 S 1040 198 1250 268" />
+      <path d="M-40 344 C 200 286 440 404 660 346 S 1060 286 1250 356" />
+    </svg>
+    <div class="ei-container pc-proof__in">
+      <div class="pc-proof__head" data-reveal>
+        <p class="ei-eyebrow">{c.proof.eyebrow}</p>
+        <h2 id="proof-title">{c.proof.title}</h2>
+        <p class="ei-lead">{c.proof.lead}</p>
+      </div>
+      <div class="pc-proof__stats" data-reveal>
+        {
+          c.proof.stats.map((s) => (
+            <div class="pc-stat">
+              <b class="ei-grad-text">{s.value}</b>
+              <span>{s.label}</span>
+            </div>
+          ))
+        }
+      </div>
+      <div class="pc-proof__grid">
+        {
+          c.trust.items.map((item, i) => (
+            <article class="pc-proof__card" data-reveal style={`--i:${i}`}>
+              <span class="pc-proof__ic"><Icon name={proofIcons[i]} size={22} /></span>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </article>
+          ))
+        }
+      </div>
     </div>
-    <div class="ei-grid ei-grid--3">
-      {
-        c.trust.items.map((item, i) => (
-          <Card title={item.title} index={i}>
-            <p>{item.body}</p>
-          </Card>
-        ))
-      }
-    </div>
-  </Section>
+  </section>
 
-  <!-- Ecosystem cross-links -->
-  <Section id="ecosystem" tone="contrast" labelledby="eco-title">
+  <!-- Ecosystem cross-links (kept from config) -->
+  <Section id="ecosystem" tone="raised" labelledby="eco-title">
     <div class="ei-head ei-head--center" data-reveal>
       <p class="ei-eyebrow">{c.ecosystem.eyebrow}</p>
       <h2 id="eco-title">{c.ecosystem.title}</h2>
@@ -206,23 +253,33 @@ const paths = [
     <FAQ items={c.faq.items} />
   </Section>
 
-  <!-- Final WhatsApp CTA -->
-  <Section id="contact" tone="contrast" labelledby="cta-title">
-    <div class="ei-cta" data-reveal>
-      <p class="ei-eyebrow">{c.contactCta.eyebrow}</p>
-      <h2 id="cta-title">{c.contactCta.title}</h2>
-      <p class="ei-lead">{c.contactCta.copy}</p>
-      <div class="ei-cta__actions">
-        <Button href={waLink(c.hero.whatsappText)} variant="whatsapp" target="_blank" rel="noopener" data-ga-vertical="whatsapp">
-          {c.contactCta.primary}
-        </Button>
-        <Button href={contactHref} variant="secondary">{c.contactCta.secondary}</Button>
+  <!-- Final gradient WhatsApp CTA -->
+  <section id="contact" class="pc-cta-sec" aria-labelledby="cta-title">
+    <div class="ei-container">
+      <div class="pc-cta" data-reveal>
+        <svg class="ei-contour ei-contour--onDark pc-cta__contour" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+          <path d="M-40 78 C 220 24 420 138 660 82 S 1040 28 1250 98" />
+          <path d="M-40 176 C 200 120 440 240 660 180 S 1060 120 1250 192" />
+          <path d="M-40 274 C 220 216 420 334 660 274 S 1040 216 1250 286" />
+        </svg>
+        <div class="pc-cta__in">
+          <p class="ei-eyebrow">{c.contactCta.eyebrow}</p>
+          <h2 id="cta-title">{c.contactCta.title}</h2>
+          <p class="ei-lead">{c.contactCta.copy}</p>
+          <div class="pc-cta__actions">
+            <Button href={waLink(c.hero.whatsappText)} variant="whatsapp" target="_blank" rel="noopener" data-ga-vertical="whatsapp">
+              {c.contactCta.primary}
+            </Button>
+            <Button href={contactHref} variant="secondary">{c.contactCta.secondary}</Button>
+          </div>
+        </div>
       </div>
     </div>
-  </Section>
+  </section>
 </BaseLayout>
 
 <style>
+  /* ---- Section heads & shared grids ------------------------------------ */
   .ei-head {
     max-width: 60ch;
     margin-bottom: 2.5rem;
@@ -254,12 +311,11 @@ const paths = [
   .ei-grid--3 {
     grid-template-columns: repeat(3, 1fr);
   }
-
   .ei-pillar-line {
     font-size: 1.02rem;
   }
 
-  /* Two-path split */
+  /* ---- Two-path split -------------------------------------------------- */
   .pc-paths {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -290,8 +346,21 @@ const paths = [
     box-shadow: var(--ei-shadow-lg);
     border-color: var(--ei-accent);
   }
+  .pc-path__top {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .pc-path__ic {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ei-radius-md);
+    background: var(--ei-accent-soft);
+    color: var(--ei-accent-text);
+  }
   .pc-path__tag {
-    align-self: flex-start;
     display: inline-flex;
     align-items: center;
     padding: 0.3em 0.85em;
@@ -326,8 +395,7 @@ const paths = [
     font-size: 0.94rem;
     color: var(--ei-ink-soft);
   }
-  .pc-path__points svg {
-    flex: 0 0 auto;
+  .pc-path__points :global(.ei-ic) {
     color: var(--ei-accent);
   }
   .pc-path__note {
@@ -346,7 +414,107 @@ const paths = [
     gap: 0.6rem;
   }
 
-  /* Confidentiality strip */
+  /* ---- What-we-handle bento -------------------------------------------- */
+  .pc-bento {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: clamp(0.9rem, 0.6rem + 0.8vw, 1.25rem);
+  }
+  .pc-tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: clamp(1.4rem, 1.1rem + 1vw, 2rem);
+    background: var(--ei-surface);
+    border: 1px solid var(--ei-hairline);
+    border-radius: var(--ei-radius-lg);
+    box-shadow: var(--ei-shadow-sm);
+    overflow: hidden;
+    transition: transform 0.3s var(--ei-ease-out), box-shadow 0.3s var(--ei-ease), border-color 0.3s var(--ei-ease);
+  }
+  .pc-tile:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--ei-shadow-md);
+    border-color: var(--ei-accent);
+  }
+  .pc-tile--c0 { grid-column: span 3; }
+  .pc-tile--c1 { grid-column: span 3; }
+  .pc-tile--c2 { grid-column: span 2; }
+  .pc-tile--types { grid-column: span 4; }
+  .pc-tile--feature {
+    background: linear-gradient(160deg, var(--ei-accent-soft), var(--ei-surface) 62%);
+    border-color: var(--ei-hairline-strong);
+  }
+  .pc-tile__ic {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ei-radius-md);
+    background: var(--ei-accent-soft);
+    color: var(--ei-accent-text);
+    margin-bottom: 0.3rem;
+  }
+  .pc-tile__tag {
+    align-self: flex-start;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ei-gold-text);
+  }
+  .pc-tile h3 {
+    font-size: 1.15rem;
+  }
+  .pc-tile p {
+    color: var(--ei-muted);
+    font-size: 0.96rem;
+    text-wrap: pretty;
+  }
+  .pc-tile--types h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.4rem;
+  }
+  .pc-types {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem 1rem;
+  }
+  .pc-types li {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+  .pc-types__ic {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    border-radius: var(--ei-radius-sm);
+    background: var(--ei-accent-soft);
+    color: var(--ei-accent-text);
+  }
+  .pc-types__txt {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+  }
+  .pc-types__txt b {
+    font-size: 0.94rem;
+    font-weight: 600;
+    color: var(--ei-ink);
+  }
+  .pc-types__txt small {
+    font-size: 0.78rem;
+    color: var(--ei-faint);
+  }
+
+  /* ---- Confidentiality ------------------------------------------------- */
   .pc-conf {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -359,31 +527,43 @@ const paths = [
   .pc-conf__head .ei-lead {
     margin-top: 1rem;
   }
-  .pc-conf__grid {
+  .pc-conf__cards {
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 0.75rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
   }
-  .pc-conf__grid li {
+  .pc-conf__card {
     display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    padding: 0.95rem 1.1rem;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1.1rem 1.15rem;
     background: var(--ei-surface);
     border: 1px solid var(--ei-hairline);
-    border-radius: var(--ei-radius-sm);
+    border-radius: var(--ei-radius-md);
     font-size: 0.95rem;
     font-weight: 500;
     color: var(--ei-ink-soft);
+    box-shadow: var(--ei-shadow-sm);
+    transition: transform 0.3s var(--ei-ease-out), border-color 0.3s var(--ei-ease);
   }
-  .pc-conf__grid svg {
-    flex: 0 0 auto;
-    color: var(--ei-accent);
+  .pc-conf__card:hover {
+    transform: translateY(-3px);
+    border-color: var(--ei-accent);
+  }
+  .pc-conf__ic {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--ei-radius-sm);
+    background: var(--ei-accent-soft);
+    color: var(--ei-accent-text);
   }
 
-  /* Process steps */
+  /* ---- How it works (steps) -------------------------------------------- */
   .ei-steps {
     list-style: none;
     margin: 0;
@@ -391,7 +571,6 @@ const paths = [
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.25rem;
-    counter-reset: step;
   }
   .ei-step {
     display: flex;
@@ -401,15 +580,37 @@ const paths = [
     background: var(--ei-surface);
     border: 1px solid var(--ei-hairline);
     border-radius: var(--ei-radius-md);
+    box-shadow: var(--ei-shadow-sm);
+    transition: transform 0.3s var(--ei-ease-out), border-color 0.3s var(--ei-ease);
+  }
+  .ei-step:hover {
+    transform: translateY(-3px);
+    border-color: var(--ei-accent);
+  }
+  .ei-step__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.35rem;
+  }
+  .ei-step__ic {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ei-radius-md);
+    background: var(--ei-accent-soft);
+    color: var(--ei-accent-text);
   }
   .ei-step__n {
     display: grid;
     place-items: center;
-    width: 36px;
-    height: 36px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    background: var(--ei-accent-soft);
-    color: var(--ei-accent-text);
+    border: 1px solid var(--ei-hairline-strong);
+    color: var(--ei-gold-text);
+    font-size: 0.85rem;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
   }
@@ -421,42 +622,170 @@ const paths = [
     font-size: 0.94rem;
   }
 
-  /* Contact CTA */
-  .ei-cta {
+  /* ---- Dark STAT / PROOF band ------------------------------------------ */
+  .pc-proof {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(3.5rem, 2.2rem + 5vw, 7rem);
+    background: var(--ei-surface-contrast);
+    color: var(--ei-on-contrast);
+    border-block: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .pc-proof__in {
+    position: relative;
+    z-index: 1;
+  }
+  .pc-proof__head {
+    max-width: 60ch;
+  }
+  .pc-proof__head .ei-eyebrow {
+    color: var(--ei-eyebrow-band);
+  }
+  .pc-proof__head h2 {
+    margin-top: 0.7rem;
+    color: var(--ei-on-contrast);
+  }
+  .pc-proof__head .ei-lead {
+    margin-top: 1rem;
+    color: var(--ei-on-contrast-muted);
+  }
+  .pc-proof__stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: clamp(1rem, 0.5rem + 2vw, 2rem);
+    margin-top: clamp(2rem, 1.5rem + 2vw, 3rem);
+    padding-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .pc-stat b {
+    display: block;
+    font-size: clamp(2rem, 1.4rem + 2.6vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .pc-stat span {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--ei-on-contrast-muted);
+  }
+  .pc-proof__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-top: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+  .pc-proof__card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: clamp(1.3rem, 1rem + 1vw, 1.8rem);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--ei-radius-lg);
+  }
+  .pc-proof__ic {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--ei-radius-md);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--ei-eyebrow-band);
+    margin-bottom: 0.3rem;
+  }
+  .pc-proof__card h3 {
+    font-size: 1.1rem;
+    color: var(--ei-on-contrast);
+  }
+  .pc-proof__card p {
+    color: var(--ei-on-contrast-muted);
+    font-size: 0.94rem;
+    text-wrap: pretty;
+  }
+
+  /* ---- Gradient WhatsApp CTA ------------------------------------------- */
+  .pc-cta-sec {
+    padding-block: clamp(3rem, 2rem + 4vw, 5.5rem);
+  }
+  .pc-cta {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(2.2rem, 1.6rem + 3vw, 3.8rem);
+    border-radius: var(--ei-radius-xl);
+    color: var(--ei-on-contrast);
+    text-align: center;
+    box-shadow: var(--ei-shadow-lg);
+    /* Dark clay base with an amber accent sweep — text stays on the dark, so it is
+       AA-safe in both light and dark. The lighter stop is a token mix that stays
+       dark even when --ei-accent-strong flips light in dark mode (~10:1 on text). */
+    background:
+      radial-gradient(90% 120% at 88% 0%, var(--ei-glow), transparent 60%),
+      radial-gradient(80% 120% at 6% 100%, var(--ei-accent-soft), transparent 62%),
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--ei-accent-strong) 22%, var(--ei-surface-contrast)),
+        var(--ei-surface-contrast) 60%
+      );
+  }
+  .pc-cta__in {
+    position: relative;
+    z-index: 1;
     max-width: 60ch;
     margin-inline: auto;
-    text-align: center;
   }
-  .ei-cta h2 {
+  .pc-cta .ei-eyebrow {
+    color: var(--ei-eyebrow-band);
+  }
+  .pc-cta h2 {
     margin-top: 0.7rem;
+    color: var(--ei-on-contrast);
   }
-  .ei-cta .ei-lead {
+  .pc-cta .ei-lead {
     margin: 1rem auto 0;
+    color: var(--ei-on-contrast-muted);
   }
-  .ei-cta__actions {
+  .pc-cta__actions {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.75rem;
     margin-top: 2rem;
   }
-  .ei-cta__actions :global(.ei-btn--secondary),
-  .ei-cta__actions :global(.ei-btn--ghost) {
+  .pc-cta__actions :global(.ei-btn--secondary) {
     --_fg: var(--ei-on-contrast);
-    --_bd: rgba(255, 255, 255, 0.35);
+    --_bd: rgba(255, 255, 255, 0.4);
   }
-  .ei-cta__actions :global(.ei-btn--secondary:hover) {
-    --_bg: rgba(255, 255, 255, 0.1);
+  .pc-cta__actions :global(.ei-btn--secondary:hover) {
+    --_bg: rgba(255, 255, 255, 0.12);
     --_bd: var(--ei-on-contrast);
     --_fg: var(--ei-on-contrast);
   }
 
+  /* ---- Responsive ------------------------------------------------------ */
   @media (max-width: 960px) {
     .ei-grid--3 {
       grid-template-columns: repeat(2, 1fr);
     }
     .ei-steps {
       grid-template-columns: repeat(2, 1fr);
+    }
+    .pc-proof__stats {
+      grid-template-columns: repeat(2, 1fr);
+      row-gap: 1.6rem;
+    }
+    .pc-proof__grid {
+      grid-template-columns: 1fr;
+    }
+    /* Bento → two even rows on tablet */
+    .pc-tile--c0,
+    .pc-tile--c1,
+    .pc-tile--c2 {
+      grid-column: span 3;
+    }
+    .pc-tile--types {
+      grid-column: span 6;
     }
   }
   @media (max-width: 780px) {
@@ -472,6 +801,24 @@ const paths = [
       grid-template-columns: 1fr;
     }
     .ei-steps {
+      grid-template-columns: 1fr;
+    }
+    .pc-bento {
+      grid-template-columns: 1fr;
+    }
+    .pc-tile--c0,
+    .pc-tile--c1,
+    .pc-tile--c2,
+    .pc-tile--types {
+      grid-column: span 1;
+    }
+    .pc-conf__cards {
+      grid-template-columns: 1fr;
+    }
+    .pc-proof__stats {
+      grid-template-columns: 1fr 1fr;
+    }
+    .pc-types {
       grid-template-columns: 1fr;
     }
   }

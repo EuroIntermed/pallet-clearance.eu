@@ -531,6 +531,75 @@ button {
   animation-name: ei-fade-in-line;
 }
 
+/* =========================================================================
+   ABSTRACT BACKGROUND SYSTEM (landing) — near-zero-weight, monochrome-leaning.
+   1. film grain (fixed, soft-light noise)  2. topographic contour lines
+   3. gradient-text util  4. line-icon base. Kept subtle so AA never suffers.
+   ========================================================================= */
+
+/* 1 — page-level film grain: an inline feTurbulence noise, blended soft-light so
+   it only adds tooth and never shifts text contrast. Sits below the sticky nav
+   (z 900) and the chat widget, and is always click-through. */
+.ei-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+}
+:root[data-theme='dark'] .ei-grain {
+  opacity: 0.34;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .ei-grain {
+    opacity: 0.34;
+  }
+}
+
+/* 2 — topographic contour: flowing near-neutral lines behind a section. */
+.ei-contour {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  color: var(--ei-ink);
+  opacity: 0.055;
+}
+:root[data-theme='dark'] .ei-contour {
+  opacity: 0.09;
+  color: var(--ei-accent);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .ei-contour {
+    opacity: 0.09;
+    color: var(--ei-accent);
+  }
+}
+/* On the dark bands the contour is drawn in light ink instead. */
+.ei-contour--onDark {
+  color: #fff;
+  opacity: 0.08;
+}
+
+/* 3 — gradient accent text (used on the dark proof band's big figures). */
+.ei-grad-text {
+  background: linear-gradient(120deg, var(--ei-on-contrast), var(--ei-eyebrow-band));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 4 — line-icon base: consistent stroke rendering wherever <Icon> is dropped. */
+.ei-ic {
+  display: block;
+  flex: 0 0 auto;
+}
+
 /* Global reduced-motion off-switch — disables every animation/transition. */
 @media (prefers-reduced-motion: reduce) {
   html {

@@ -1,0 +1,79 @@
+---
+/**
+ * Icon — a tiny, dependency-free inline-SVG set (2px rounded strokes) used as the
+ * visual anchors across the landing sections (feature/step/trust/what-we-handle).
+ * No icon library: every glyph is hand-authored on a 24×24 grid and inherits
+ * `currentColor`, so callers colour it through the token layer. `aria-hidden`
+ * because icons here are always decorative next to a text label.
+ */
+interface Props {
+  name: string
+  size?: number
+  class?: string
+}
+const { name, size = 24, class: className = '' } = Astro.props as Props
+
+// Each entry is the inner markup of a 0 0 24 24 viewBox, stroked in currentColor.
+const paths: Record<string, string> = {
+  // stacked pallet — the PalletClearance signature mark
+  pallet:
+    '<path d="M4 20h16M4 20v-3h16v3M6 17v-3h12v3M8 14v-3h8v3"/><path d="M9.5 20v-3M14.5 20v-3M11 17v-3M13 14v-3"/>',
+  // delivery route with a pin marker
+  route:
+    '<path d="M4 18h9a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h6"/><circle cx="18" cy="15" r="2"/><path d="M6 4.5 4 6l2 1.5"/>',
+  // buyer target / matched lot
+  target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.4"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/>',
+  // shield-check — confidential / trust
+  shield: '<path d="M12 3 5 6v5c0 4.4 3 7.4 7 9 4-1.6 7-4.6 7-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  // padlock — no public exposure
+  lock: '<rect x="5" y="10.5" width="14" height="9" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>',
+  // funnel / filter — qualification
+  filter: '<path d="M4 5h16l-6 7v6l-4 2v-8z"/>',
+  // check
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  // chat bubble — WhatsApp / assistant flow
+  chat: '<path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/>',
+  // box / package — non-food stock
+  box: '<path d="M21 8 12 3 3 8l9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/>',
+  // layers — overstock / surplus
+  layers: '<path d="M12 3 3 8l9 5 9-5-9-5z"/><path d="M3 13l9 5 9-5M3 16.5l9 5 9-5"/>',
+  // price tag — liquidation
+  tag: '<path d="M4 12V5a1 1 0 0 1 1-1h7l8 8-8 8z"/><circle cx="8.5" cy="8.5" r="1.4"/>',
+  // rotate / return — returns
+  rotate: '<path d="M4 12a8 8 0 1 1 2.5 5.8"/><path d="M4 20v-4h4"/>',
+  // clock — near-expiry
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  // flag — end-of-line
+  flag: '<path d="M6 21V4"/><path d="M6 4h11l-2.2 3.5L17 11H6"/>',
+  // stack of coins / surplus
+  stack: '<ellipse cx="12" cy="6" rx="7" ry="2.6"/><path d="M5 6v5c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6V6"/><path d="M5 11v5c0 1.4 3.1 2.6 7 2.6s7-1.2 7-2.6v-5"/>',
+  // food — wheat / ingredient
+  wheat: '<path d="M12 21V9"/><path d="M12 9c-2 0-3.5-1.6-3.5-3.6C10.5 5.4 12 7 12 9zM12 9c2 0 3.5-1.6 3.5-3.6C13.5 5.4 12 7 12 9zM12 13c-2 0-3.5-1.6-3.5-3.6C10.5 9.4 12 11 12 13zM12 13c2 0 3.5-1.6 3.5-3.6C13.5 9.4 12 11 12 13zM12 17c-2 0-3.5-1.6-3.5-3.6C10.5 13.4 12 15 12 17zM12 17c2 0 3.5-1.6 3.5-3.6C13.5 13.4 12 15 12 17z"/>',
+  // globe / market — Romania route
+  globe: '<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.4 2.3 3.6 5.3 3.6 8.5S14.4 18.2 12 20.5C9.6 18.2 8.4 15.2 8.4 12S9.6 5.8 12 3.5z"/>',
+  // building / company
+  building: '<path d="M5 21V5a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v16M15 10h3a1 1 0 0 1 1 1v10"/><path d="M8 8h3M8 12h3M8 16h3M3 21h18"/>',
+  // send / paper plane — controlled routing
+  send: '<path d="M21 4 3 11l6 2.5L12 20l3-7z"/><path d="M9 13.5 21 4"/>',
+  // eye / private review
+  eye: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.6"/>',
+  // split arrows — choose a route
+  split: '<path d="M12 20V9"/><path d="M12 9 7 4M12 9l5-5"/><path d="M4 8V4h4M20 8V4h-4"/>',
+}
+
+const inner = paths[name] ?? paths.check
+---
+
+<svg
+  class={`ei-ic ${className}`.trim()}
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  set:html={inner}
+/>

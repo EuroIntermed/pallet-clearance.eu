@@ -114,6 +114,17 @@ const ro = {
         body: 'Pentru furnizori europeni care vor să testeze produse în România sau să găsească parteneri B2B locali.',
       },
     ],
+    types: {
+      title: 'Tipuri de stoc pe care le valorificăm',
+      items: [
+        { name: 'Overstock', hint: 'Stoc în exces' },
+        { name: 'Lichidare', hint: 'Închideri și solduri' },
+        { name: 'Retururi', hint: 'Marfă returnată sau deschisă' },
+        { name: 'Near-expiry', hint: 'Termen scurt de valabilitate' },
+        { name: 'End-of-line', hint: 'Serii încheiate' },
+        { name: 'Surplus', hint: 'Producție în surplus' },
+      ],
+    },
   },
   confidential: {
     eyebrow: 'Un flux B2B controlat',
@@ -165,6 +176,17 @@ const ro = {
         title: 'Companie reală, din România',
         body: 'Operat în ecosistemul EURO INTERMED SOLUTIONS · J8/735/2018 · CUI 39132147 · Brașov.',
       },
+    ],
+  },
+  proof: {
+    eyebrow: 'De ce funcționează',
+    title: 'Un desk B2B construit pe discreție',
+    lead: 'Fără vitrină publică, fără prețuri afișate. Doar loturi calificate, direcționate discret către partenerul potrivit.',
+    stats: [
+      { value: '0', label: 'listări publice' },
+      { value: '2', label: 'fluxuri: vând / cumpăr' },
+      { value: '100%', label: 'B2B confidențial' },
+      { value: 'UE', label: 'date găzduite în UE' },
     ],
   },
   ecosystem: {
@@ -490,6 +512,17 @@ const en: typeof ro = {
         body: 'For European suppliers looking to test products in Romania or find local B2B partners.',
       },
     ],
+    types: {
+      title: 'The stock types we move',
+      items: [
+        { name: 'Overstock', hint: 'Excess inventory' },
+        { name: 'Liquidation', hint: 'Close-outs and clearance' },
+        { name: 'Returns', hint: 'Returned or opened goods' },
+        { name: 'Near-expiry', hint: 'Short shelf life' },
+        { name: 'End-of-line', hint: 'Discontinued runs' },
+        { name: 'Surplus', hint: 'Surplus production' },
+      ],
+    },
   },
   confidential: {
     eyebrow: 'A controlled B2B flow',
@@ -541,6 +574,17 @@ const en: typeof ro = {
         title: 'A real Romanian company',
         body: 'Operated in the EURO INTERMED SOLUTIONS ecosystem · J8/735/2018 · VAT 39132147 · Brașov.',
       },
+    ],
+  },
+  proof: {
+    eyebrow: 'Why it works',
+    title: 'A B2B desk built on discretion',
+    lead: 'No public storefront, no posted prices. Just qualified lots, routed discreetly to the right partner.',
+    stats: [
+      { value: '0', label: 'public listings' },
+      { value: '2', label: 'flows: sell / buy' },
+      { value: '100%', label: 'confidential B2B' },
+      { value: 'EU', label: 'data hosted in the EU' },
     ],
   },
   ecosystem: {
