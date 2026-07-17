@@ -70,6 +70,14 @@ export const ogCards: Record<string, OgCard> = {
     title: BRAND,
     description: 'How it works — from listing to buyer in a few steps',
   },
+  despre: {
+    title: BRAND,
+    description: 'Despre noi — povestea Euro Intermed Solutions, din 2015 până azi',
+  },
+  'despre-en': {
+    title: BRAND,
+    description: 'About us — the Euro Intermed Solutions story, from 2015 to today',
+  },
 }
 
 /**
@@ -86,7 +94,9 @@ export function ogSlug(path: string, locale: Locale): string {
       ? 'contact'
       : p === '/cum-functioneaza'
         ? 'cum-functioneaza'
-        : null
+        : p === '/despre'
+          ? 'despre'
+          : null
   if (key) return en ? `${key}-en` : key
   // Home + any other page (legal, 404, ...) → brand card.
   return en ? 'home-en' : 'default'
