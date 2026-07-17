@@ -93,7 +93,7 @@ export const canonicalEn: string = str('PUBLIC_CANONICAL_EN', 'https://www.palle
  * WhatsApp-first (wa.me deep links) + the AI chat widget; this is the standard
  * for all ecosystem sites. Do not add a form-action env var back. */
 export const whatsappNumber: string = str('PUBLIC_WHATSAPP_NUMBER', '40745799995')
-export const contactEmail: string = str('PUBLIC_CONTACT_EMAIL', 'b2beurointermed@euro-intermed.com')
+export const contactEmail: string = str('PUBLIC_CONTACT_EMAIL', 'palletclearance@gmail.com')
 export const contactPhone: string = str('PUBLIC_CONTACT_PHONE', '0765934455')
 export const calendlyUrl: string = str('PUBLIC_CALENDLY_URL', 'https://calendly.com/eurointermeds')
 
